@@ -18,10 +18,6 @@
   --border-mid:   #CCCCCA;
   --border-dark:  #1F2A3A;
 
-  /* Typography */
-  --font-sans: var(--font-sans), sans-serif;
-  --font-mono: var(--font-mono), monospace;
-
   /* Layout */
   --content-max:  1200px;
   --nav-height:   56px;

@@ -22,21 +22,14 @@ export default function Nav({ active, onTabChange }: NavProps) {
         flexShrink: 0,
       }}
     >
-      {/* Wordmark */}
+      {/* Logo */}
       <button
         onClick={() => onTabChange(null)}
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 700,
-          fontSize: 17,
-          letterSpacing: '-0.02em',
-          color: 'var(--color-ink)',
-          transition: 'opacity var(--t-fast)',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.6')}
+        style={{ transition: 'opacity var(--t-fast)', lineHeight: 0 }}
+        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.7')}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
       >
-        Unit
+        <img src="/logo-light.jpeg" alt="Unit" style={{ height: 28, width: 'auto' }} />
       </button>
 
       {/* Tabs */}
