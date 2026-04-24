@@ -198,7 +198,6 @@ export default function ContactForm() {
         )}
 
         <textarea
-          autoFocus
           value={message}
           onChange={e => setMessage(e.target.value)}
           onFocus={() => setIsFocused(true)}
