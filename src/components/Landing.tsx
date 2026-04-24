@@ -278,7 +278,7 @@ export default function Landing() {
 
             {/* Logo */}
             <img
-              src="/logo-dark.jpeg"
+              src="/logo-light.jpeg"
               alt="Unit"
               style={{
                 height: 200,
