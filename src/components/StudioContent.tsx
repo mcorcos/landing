@@ -50,8 +50,7 @@ export default function StudioContent({ dark = false }: { dark?: boolean }) {
           color: '#8A8A87',
         }}
       >
-        No somos una agencia. Cada producto que lanzamos es nuestro. Cuando trabajamos
-        con otros, lo hacemos como si fuera propio.
+        No somos una agencia. Cada trabajo que tomamos lo realizamos como si fuera propio.
       </p>
     </div>
   )

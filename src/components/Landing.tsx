@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import WorkContent from './WorkContent'
 import StudioContent from './StudioContent'
 
-export type Tab = null | 'Work' | 'Studio'
+export type Tab = null | 'Work' | 'Studio' | 'Contact'
 
 const TABS: Tab[] = ['Work', 'Studio']
 
@@ -165,16 +165,17 @@ export default function Landing() {
 
         {/* Contact */}
         <button
+          onClick={() => setActive(active === 'Contact' ? null : 'Contact')}
           style={{
             fontFamily: 'var(--font-sans)',
             fontWeight: 700,
             fontSize: 13,
             padding: '7px 18px',
-            background: '#fff',
-            color: '#0A1628',
+            background: active === 'Contact' ? 'transparent' : '#fff',
+            color: active === 'Contact' ? '#fff' : '#0A1628',
             border: '1px solid #fff',
             borderRadius: 0,
-            transition: 'opacity 150ms ease-out',
+            transition: 'opacity 150ms ease-out, background 150ms ease-out',
           }}
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
@@ -262,6 +263,142 @@ export default function Landing() {
           <div style={{ animation: 'fadeUp 200ms ease-out' }}>
             <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }`}</style>
             <StudioContent dark />
+          </div>
+        )}
+
+        {active === 'Contact' && (
+          <div style={{ animation: 'fadeUp 200ms ease-out', width: '100%', maxWidth: 480 }}>
+            <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }`}</style>
+
+            <div
+              style={{
+                border: '1px solid #1F2A3A',
+                padding: '36px 36px 32px',
+                textAlign: 'left',
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 10,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: '#8A8A87',
+                  marginBottom: 28,
+                }}
+              >
+                Contacto
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 12,
+                    color: '#8A8A87',
+                    display: 'block',
+                    marginBottom: 6,
+                  }}>
+                    Nombre
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Tu nombre"
+                    style={{
+                      width: '100%',
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: 14,
+                      color: '#fff',
+                      background: 'transparent',
+                      border: '1px solid #1F2A3A',
+                      borderRadius: 0,
+                      padding: '10px 12px',
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = '#2E5FA3')}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = '#1F2A3A')}
+                  />
+                </div>
+
+                <div>
+                  <label style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 12,
+                    color: '#8A8A87',
+                    display: 'block',
+                    marginBottom: 6,
+                  }}>
+                    Mail o teléfono
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="hola@ejemplo.com / +54 11..."
+                    style={{
+                      width: '100%',
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: 14,
+                      color: '#fff',
+                      background: 'transparent',
+                      border: '1px solid #1F2A3A',
+                      borderRadius: 0,
+                      padding: '10px 12px',
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = '#2E5FA3')}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = '#1F2A3A')}
+                  />
+                </div>
+
+                <div>
+                  <label style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 12,
+                    color: '#8A8A87',
+                    display: 'block',
+                    marginBottom: 6,
+                  }}>
+                    ¿Qué querés hacer?
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder="Contanos tu proyecto..."
+                    style={{
+                      width: '100%',
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: 14,
+                      color: '#fff',
+                      background: 'transparent',
+                      border: '1px solid #1F2A3A',
+                      borderRadius: 0,
+                      padding: '10px 12px',
+                      outline: 'none',
+                      resize: 'none',
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = '#2E5FA3')}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = '#1F2A3A')}
+                  />
+                </div>
+
+                <button
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    padding: '11px 24px',
+                    background: '#fff',
+                    color: '#0A1628',
+                    border: '1px solid #fff',
+                    borderRadius: 0,
+                    alignSelf: 'flex-start',
+                    transition: 'opacity 150ms ease-out',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                >
+                  Enviar →
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </main>
