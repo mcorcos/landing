@@ -1,34 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useGoogleLogin } from '@react-oauth/google'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 export default function ContactForm() {
   const [message, setMessage] = useState('')
+  const [isRecording, setIsRecording] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
+  const recognitionRef = useRef<unknown>(null)
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        // Get user info (email) from Google
         const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         }).then((r) => r.json())
 
-        // Send to our API route
         const res = await fetch('/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: userInfo.email, name: userInfo.name, message }),
         })
 
-        if (res.ok) {
-          setStatus('success')
-        } else {
-          setStatus('error')
-        }
+        setStatus(res.ok ? 'success' : 'error')
       } catch {
         setStatus('error')
       }
@@ -37,104 +33,177 @@ export default function ContactForm() {
   })
 
   const handleSubmit = () => {
-    if (!message.trim()) return
+    if (!message.trim() || status === 'loading') return
     setStatus('loading')
     login()
   }
 
+  const toggleMic = () => {
+    const SR = (window as Window & { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown }).SpeechRecognition
+      || (window as Window & { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
+
+    if (!SR) return
+
+    if (isRecording) {
+      ;(recognitionRef.current as { stop: () => void })?.stop()
+      setIsRecording(false)
+      return
+    }
+
+    const recognition = new (SR as new () => {
+      lang: string; continuous: boolean; interimResults: boolean;
+      onresult: (e: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void;
+      onend: () => void; onerror: () => void; start: () => void;
+    })()
+    recognition.lang = 'es-AR'
+    recognition.continuous = false
+    recognition.interimResults = false
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript
+      setMessage((prev) => (prev ? prev + ' ' + transcript : transcript))
+    }
+    recognition.onend = () => setIsRecording(false)
+    recognition.onerror = () => setIsRecording(false)
+    recognitionRef.current = recognition
+    recognition.start()
+    setIsRecording(true)
+  }
+
   if (status === 'success') {
     return (
-      <div style={{ textAlign: 'center' }}>
-        <p style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          color: '#8A8A87',
-          marginBottom: 12,
-        }}>
+      <div style={{ textAlign: 'center', animation: 'fadeUp 400ms ease-out' }}>
+        <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }`}</style>
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A8A87', marginBottom: 16 }}>
           Mensaje enviado
         </p>
-        <p style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: 18,
-          color: '#fff',
-          fontWeight: 700,
-        }}>
-          Te contactamos pronto.
+        <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 24, color: '#fff', letterSpacing: '-0.02em' }}>
+          Te contactamos en un día.
         </p>
       </div>
     )
   }
 
   return (
-    <div style={{ width: '100%', maxWidth: 520 }}>
-      <textarea
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Preguntanos lo que sea."
-        rows={6}
-        style={{
-          width: '100%',
-          fontFamily: 'var(--font-sans)',
-          fontSize: 16,
-          color: '#1A1A1A',
-          background: '#F2F2F0',
-          border: 'none',
-          borderRadius: 0,
-          padding: '20px 24px',
-          outline: 'none',
-          resize: 'none',
-          display: 'block',
-          lineHeight: 1.6,
-        }}
-      />
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
-        {status === 'error' && (
-          <span style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: '#8A8A87',
-            letterSpacing: '0.08em',
-          }}>
-            Algo salió mal. Intentá de nuevo.
-          </span>
-        )}
-        <div style={{ marginLeft: 'auto' }}>
-          <button
-            onClick={handleSubmit}
-            disabled={status === 'loading' || !message.trim()}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 700,
-              fontSize: 13,
-              padding: '11px 28px',
-              background: message.trim() ? '#fff' : 'rgba(255,255,255,0.2)',
-              color: message.trim() ? '#0A1628' : '#8A8A87',
-              border: '1px solid rgba(255,255,255,0.3)',
-              borderRadius: 0,
-              cursor: message.trim() ? 'pointer' : 'default',
-              transition: 'all 150ms ease-out',
-            }}
-            onMouseEnter={(e) => { if (message.trim()) e.currentTarget.style.opacity = '0.8' }}
-            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
-          >
-            {status === 'loading' ? 'Abriendo Google...' : 'Enviar →'}
-          </button>
-        </div>
-      </div>
-
+    <div style={{ width: '100%', maxWidth: 640, textAlign: 'center' }}>
+      {/* Header */}
       <p style={{
         fontFamily: 'var(--font-mono)',
         fontSize: 10,
+        letterSpacing: '0.14em',
+        textTransform: 'uppercase',
         color: '#8A8A87',
-        letterSpacing: '0.06em',
-        marginTop: 10,
-        textAlign: 'right',
+        marginBottom: 16,
       }}>
-        Te pedimos el mail via Google para responderte.
+        Contactanos
       </p>
+      <h2 style={{
+        fontFamily: 'var(--font-sans)',
+        fontWeight: 700,
+        fontSize: 'clamp(24px, 3vw, 40px)',
+        lineHeight: 1.1,
+        letterSpacing: '-0.03em',
+        color: '#fff',
+        margin: '0 0 12px',
+      }}>
+        ¿Cuál es tu idea?
+      </h2>
+      <p style={{
+        fontFamily: 'var(--font-sans)',
+        fontSize: 15,
+        lineHeight: 1.6,
+        color: '#8A8A87',
+        margin: '0 0 36px',
+        maxWidth: 480,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      }}>
+        Describinos tu idea, necesidad o negocio y te damos una respuesta en un día. Agendamos una reunión.
+      </p>
+
+      {/* Chat bar */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: 'rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.12)',
+        padding: '4px 4px 4px 20px',
+        gap: 8,
+      }}>
+        <input
+          autoFocus
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit() }}
+          placeholder="Describí tu proyecto..."
+          style={{
+            flex: 1,
+            fontFamily: 'var(--font-sans)',
+            fontSize: 15,
+            color: '#fff',
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            padding: '12px 0',
+          }}
+        />
+
+        {/* Mic button */}
+        <button
+          onClick={toggleMic}
+          title="Dictá tu mensaje"
+          style={{
+            width: 40,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: isRecording ? 'rgba(255,80,80,0.15)' : 'transparent',
+            border: '1px solid',
+            borderColor: isRecording ? 'rgba(255,80,80,0.5)' : 'rgba(255,255,255,0.12)',
+            color: isRecording ? '#ff5050' : '#8A8A87',
+            flexShrink: 0,
+            transition: 'all 150ms ease-out',
+            animation: isRecording ? 'pulse 1s ease-in-out infinite' : 'none',
+          }}
+        >
+          <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </button>
+
+        {/* Send button */}
+        <button
+          onClick={handleSubmit}
+          disabled={!message.trim() || status === 'loading'}
+          style={{
+            height: 40,
+            padding: '0 20px',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 700,
+            fontSize: 13,
+            background: message.trim() ? '#fff' : 'rgba(255,255,255,0.1)',
+            color: message.trim() ? '#0A1628' : '#8A8A87',
+            border: 'none',
+            borderRadius: 0,
+            flexShrink: 0,
+            transition: 'all 150ms ease-out',
+            cursor: message.trim() ? 'pointer' : 'default',
+          }}
+          onMouseEnter={(e) => { if (message.trim()) e.currentTarget.style.opacity = '0.85' }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+        >
+          {status === 'loading' ? '...' : 'Enviar →'}
+        </button>
+      </div>
+
+      {status === 'error' && (
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff5050', marginTop: 10, letterSpacing: '0.06em' }}>
+          Algo salió mal. Intentá de nuevo.
+        </p>
+      )}
     </div>
   )
 }

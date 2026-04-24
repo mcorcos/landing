@@ -165,7 +165,7 @@ export default function Landing() {
       style={{
         height: '100vh',
         overflow: 'hidden',
-        background: '#0A1628',
+        background: '#0F1E35',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
@@ -268,7 +268,7 @@ export default function Landing() {
         }}
       >
         {active === null && (
-          <div style={{ animation: 'fadeUp 300ms ease-out' }}>
+          <div style={{ animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1)' }}>
             <style>{`
               @keyframes fadeUp {
                 from { opacity: 0; transform: translateY(12px); }
@@ -285,6 +285,7 @@ export default function Landing() {
                 width: 'auto',
                 display: 'block',
                 margin: '0 auto 48px',
+                borderRadius: 24,
               }}
             />
 
@@ -336,8 +337,8 @@ export default function Landing() {
         )}
 
         {active === 'Contact' && (
-          <div style={{ animation: 'fadeUp 200ms ease-out', width: '100%', maxWidth: 520 }}>
-            <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }`}</style>
+          <div style={{ animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1)', width: '100%', maxWidth: 640 }}>
+            <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(24px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }`}</style>
             <ContactForm />
           </div>
         )}
