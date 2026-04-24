@@ -113,8 +113,10 @@ export default function ContactForm() {
 
       {/* Claude-style chat box */}
       <div style={{
-        background: 'rgba(255,255,255,0.07)',
-        border: '1px solid rgba(255,255,255,0.14)',
+        background: 'rgba(15, 30, 53, 0.75)',
+        backdropFilter: 'blur(32px)',
+        WebkitBackdropFilter: 'blur(32px)',
+        border: '1px solid rgba(255,255,255,0.1)',
         borderRadius: 20,
         padding: '16px 16px 12px 20px',
         display: 'flex',
