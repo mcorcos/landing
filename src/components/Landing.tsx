@@ -43,6 +43,7 @@ function DotBackground() {
     function resize() {
       W = window.innerWidth
       H = window.innerHeight
+      if (!canvas) return
       canvas.width = W
       canvas.height = H
       buildDots()
