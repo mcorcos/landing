@@ -16,18 +16,18 @@ const PROJECTS = [
   },
 ]
 
-export default function WorkContent() {
-  return (
-    <div style={{ animation: 'fadeIn 200ms ease-out', width: '100%', maxWidth: 560 }}>
-      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+export default function WorkContent({ dark = false }: { dark?: boolean }) {
+  const border = dark ? '1px solid #1F2A3A' : '1px solid var(--border-light)'
 
+  return (
+    <div style={{ width: '100%', maxWidth: 560, textAlign: 'left' }}>
       <p
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: 10,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: 'var(--color-gray)',
+          color: '#8A8A87',
           marginBottom: 32,
         }}
       >
@@ -43,8 +43,8 @@ export default function WorkContent() {
               alignItems: 'baseline',
               justifyContent: 'space-between',
               padding: '20px 0',
-              borderTop: i === 0 ? '1px solid var(--border-light)' : undefined,
-              borderBottom: '1px solid var(--border-light)',
+              borderTop: i === 0 ? border : undefined,
+              borderBottom: border,
               gap: 24,
             }}
           >
@@ -55,7 +55,7 @@ export default function WorkContent() {
                   fontWeight: 700,
                   fontSize: 18,
                   letterSpacing: '-0.02em',
-                  color: 'var(--color-ink)',
+                  color: dark ? '#fff' : 'var(--color-ink)',
                 }}
               >
                 {p.name}
@@ -64,7 +64,7 @@ export default function WorkContent() {
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: 14,
-                  color: 'var(--color-gray)',
+                  color: '#8A8A87',
                   lineHeight: 1.5,
                 }}
               >
@@ -77,7 +77,7 @@ export default function WorkContent() {
                 fontSize: 10,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                color: 'var(--color-gray)',
+                color: '#8A8A87',
                 whiteSpace: 'nowrap',
                 flexShrink: 0,
               }}

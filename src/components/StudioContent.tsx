@@ -1,21 +1,13 @@
-export default function StudioContent() {
+export default function StudioContent({ dark = false }: { dark?: boolean }) {
   return (
-    <div
-      style={{
-        animation: 'fadeIn 200ms ease-out',
-        width: '100%',
-        maxWidth: 520,
-      }}
-    >
-      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
-
+    <div style={{ width: '100%', maxWidth: 520, textAlign: 'left' }}>
       <p
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: 10,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: 'var(--color-gray)',
+          color: '#8A8A87',
           marginBottom: 32,
         }}
       >
@@ -29,7 +21,7 @@ export default function StudioContent() {
           fontSize: 28,
           lineHeight: 1.2,
           letterSpacing: '-0.02em',
-          color: 'var(--color-ink)',
+          color: dark ? '#fff' : 'var(--color-ink)',
           marginBottom: 24,
         }}
       >
@@ -41,7 +33,7 @@ export default function StudioContent() {
           fontFamily: 'var(--font-sans)',
           fontSize: 16,
           lineHeight: 1.7,
-          color: 'var(--color-gray)',
+          color: '#8A8A87',
           marginBottom: 16,
         }}
       >
@@ -55,7 +47,7 @@ export default function StudioContent() {
           fontFamily: 'var(--font-sans)',
           fontSize: 16,
           lineHeight: 1.7,
-          color: 'var(--color-gray)',
+          color: '#8A8A87',
         }}
       >
         No somos una agencia. Cada producto que lanzamos es nuestro. Cuando trabajamos
