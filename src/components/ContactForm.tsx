@@ -111,53 +111,89 @@ export default function ContactForm() {
         Describinos tu idea, necesidad o negocio y te damos una respuesta en un día. Agendamos una reunión.
       </p>
 
-      {/* Chat bar */}
-      <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', padding: '4px 4px 4px 20px', gap: 8 }}>
-        <input
+      {/* Claude-style chat box */}
+      <div style={{
+        background: 'rgba(255,255,255,0.07)',
+        border: '1px solid rgba(255,255,255,0.14)',
+        borderRadius: 20,
+        padding: '16px 16px 12px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+      }}>
+        <textarea
           autoFocus
           value={message}
           onChange={e => setMessage(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit() }}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit() } }}
           placeholder="Describí tu proyecto..."
-          style={{ flex: 1, fontFamily: 'var(--font-sans)', fontSize: 15, color: '#fff', background: 'transparent', border: 'none', outline: 'none', padding: '12px 0' }}
+          rows={4}
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: 16,
+            lineHeight: 1.6,
+            color: '#fff',
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            resize: 'none',
+            width: '100%',
+          }}
         />
 
-        {/* Mic */}
-        <button
-          onClick={toggleMic}
-          title="Dictá tu mensaje"
-          style={{
-            width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: isRecording ? 'rgba(255,80,80,0.15)' : 'transparent',
-            border: '1px solid', borderColor: isRecording ? 'rgba(255,80,80,0.5)' : 'rgba(255,255,255,0.12)',
-            color: isRecording ? '#ff5050' : '#8A8A87', flexShrink: 0, transition: 'all 150ms ease-out',
-            animation: isRecording ? 'pulse 1s ease-in-out infinite' : 'none',
-          }}
-        >
+        {/* Bottom row: mic + send */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8 }}>
           <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-            <line x1="12" y1="19" x2="12" y2="22"/>
-          </svg>
-        </button>
 
-        {/* Send */}
-        <button
-          onClick={handleSubmit}
-          disabled={!message.trim() || status === 'loading'}
-          style={{
-            height: 40, padding: '0 20px', fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 13,
-            background: message.trim() ? '#fff' : 'rgba(255,255,255,0.1)',
-            color: message.trim() ? '#0F1E35' : '#8A8A87',
-            border: 'none', borderRadius: 0, flexShrink: 0,
-            transition: 'all 150ms ease-out', cursor: message.trim() ? 'pointer' : 'default',
-          }}
-          onMouseEnter={e => { if (message.trim()) e.currentTarget.style.opacity = '0.85' }}
-          onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
-        >
-          {status === 'loading' ? '...' : 'Enviar →'}
-        </button>
+          {/* Mic */}
+          <button
+            onClick={toggleMic}
+            title="Dictá tu mensaje"
+            style={{
+              width: 36, height: 36,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: '50%',
+              background: isRecording ? 'rgba(255,80,80,0.2)' : 'rgba(255,255,255,0.08)',
+              border: '1px solid',
+              borderColor: isRecording ? 'rgba(255,80,80,0.6)' : 'rgba(255,255,255,0.15)',
+              color: isRecording ? '#ff6060' : '#8A8A87',
+              transition: 'all 150ms ease-out',
+              animation: isRecording ? 'pulse 1s ease-in-out infinite' : 'none',
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+          </button>
+
+          {/* Send */}
+          <button
+            onClick={handleSubmit}
+            disabled={!message.trim() || status === 'loading'}
+            style={{
+              width: 36, height: 36,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: '50%',
+              background: message.trim() ? '#fff' : 'rgba(255,255,255,0.1)',
+              border: 'none',
+              color: message.trim() ? '#0F1E35' : '#8A8A87',
+              transition: 'all 150ms ease-out',
+              cursor: message.trim() ? 'pointer' : 'default',
+            }}
+            onMouseEnter={e => { if (message.trim()) e.currentTarget.style.opacity = '0.85' }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+          >
+            {status === 'loading'
+              ? <span style={{ fontSize: 12 }}>...</span>
+              : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="19" x2="12" y2="5"/>
+                  <polyline points="5 12 12 5 19 12"/>
+                </svg>
+            }
+          </button>
+        </div>
       </div>
 
       {status === 'error' && (
