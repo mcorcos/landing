@@ -1,7 +1,17 @@
+import Header from '@/components/Header'
+import Hero from '@/components/Hero'
+import WorkSection from '@/components/WorkSection'
+import Footer from '@/components/Footer'
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold tracking-tight">UNIT</h1>
-    </main>
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <WorkSection />
+      </main>
+      <Footer />
+    </>
   )
 }
