@@ -8,33 +8,55 @@ export type Tab = null | 'Work' | 'Studio' | 'Contact'
 
 const TABS: Tab[] = ['Work', 'Studio']
 
-// Ascending dot grid canvas animation
+// Ascending dot grid with mouse repulsion physics
 function DotBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const mouseRef = useRef({ x: -9999, y: -9999 })
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')!
 
-    const spacing = 48
+    const SPACING = 52
+    const REPULSION_RADIUS = 130  // px — campo de influencia del mouse
+    const REPULSION_FORCE = 6     // fuerza de empuje
+    const SPRING = 0.06           // velocidad de retorno al home
+    const DAMPING = 0.78          // fricción
+
     let W = window.innerWidth
     let H = window.innerHeight
 
-    type Dot = { x: number; y: number; speed: number; opacity: number }
+    type Dot = {
+      homeX: number   // columna fija en la grilla
+      homeY: number   // fila "home" que sube continuamente
+      x: number       // posición real (afectada por mouse)
+      y: number
+      vx: number      // velocidad
+      vy: number
+      ascendSpeed: number
+      opacity: number
+    }
+
     let dots: Dot[] = []
 
     function buildDots() {
       dots = []
-      const cols = Math.ceil(W / spacing) + 1
-      const rows = Math.ceil(H / spacing) + 2
+      const cols = Math.ceil(W / SPACING) + 1
+      const rows = Math.ceil(H / SPACING) + 2
       for (let c = 0; c < cols; c++) {
         for (let r = 0; r < rows; r++) {
+          const x = c * SPACING
+          const y = Math.random() * H
           dots.push({
-            x: c * spacing,
-            y: Math.random() * H, // stagger start so they don't all move in sync
-            speed: 0.2 + Math.random() * 0.4,
-            opacity: 0.15 + Math.random() * 0.35,
+            homeX: x,
+            homeY: y,
+            x,
+            y,
+            vx: 0,
+            vy: 0,
+            ascendSpeed: 0.25 + Math.random() * 0.35,
+            opacity: 0.18 + Math.random() * 0.32,
           })
         }
       }
@@ -51,18 +73,58 @@ function DotBackground() {
 
     resize()
 
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY }
+    }
+    const onMouseLeave = () => {
+      mouseRef.current = { x: -9999, y: -9999 }
+    }
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseleave', onMouseLeave)
+
     let animId: number
     function draw() {
       ctx.clearRect(0, 0, W, H)
+
+      const mx = mouseRef.current.x
+      const my = mouseRef.current.y
+
       for (const d of dots) {
-        d.y -= d.speed
-        if (d.y < -spacing) d.y = H + spacing
+        // Home sube continuamente
+        d.homeY -= d.ascendSpeed
+        if (d.homeY < -SPACING) d.homeY = H + SPACING
+
+        // Repulsión del mouse (campo electromagnético)
+        const dx = d.x - mx
+        const dy = d.y - my
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < REPULSION_RADIUS && dist > 0) {
+          const t = 1 - dist / REPULSION_RADIUS           // 0→1 según cercanía
+          const force = t * t * REPULSION_FORCE            // cuadrático: más fuerte en el centro
+          d.vx += (dx / dist) * force
+          d.vy += (dy / dist) * force
+        }
+
+        // Spring de retorno al home
+        d.vx += (d.homeX - d.x) * SPRING
+        d.vy += (d.homeY - d.y) * SPRING
+
+        // Damping + aplicar velocidad
+        d.vx *= DAMPING
+        d.vy *= DAMPING
+        d.x += d.vx
+        d.y += d.vy
+
+        // Opacidad mayor cuando está cerca del mouse (efecto de iluminación)
+        const proximity = dist < REPULSION_RADIUS ? 1 - dist / REPULSION_RADIUS : 0
+        const alpha = d.opacity + proximity * 0.4
 
         ctx.beginPath()
-        ctx.arc(d.x, d.y, 1.5, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255,255,255,${d.opacity})`
+        ctx.arc(d.x, d.y, 1.5 + proximity * 1.5, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(255,255,255,${Math.min(alpha, 0.9)})`
         ctx.fill()
       }
+
       animId = requestAnimationFrame(draw)
     }
 
@@ -71,6 +133,8 @@ function DotBackground() {
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('resize', resize)
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseleave', onMouseLeave)
     }
   }, [])
 
@@ -216,10 +280,10 @@ export default function Landing() {
               src="/logo-dark.jpeg"
               alt="Unit"
               style={{
-                height: 52,
+                height: 200,
                 width: 'auto',
                 display: 'block',
-                margin: '0 auto 40px',
+                margin: '0 auto 48px',
               }}
             />
 
