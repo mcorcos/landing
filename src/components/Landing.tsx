@@ -278,13 +278,14 @@ export default function Landing() {
 
             {/* Logo */}
             <img
-              src="/logo-dark.jpeg"
+              src="/logo-light.jpeg"
               alt="Unit"
               style={{
                 height: 200,
                 width: 'auto',
                 display: 'block',
                 margin: '0 auto 48px',
+                filter: 'invert(1)',
                 mixBlendMode: 'screen',
               }}
             />
