@@ -285,6 +285,7 @@ export default function Landing() {
                 width: 'auto',
                 display: 'block',
                 margin: '0 auto 48px',
+                mixBlendMode: 'screen',
               }}
             />
 
