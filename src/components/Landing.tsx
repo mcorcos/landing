@@ -34,7 +34,7 @@ function DotBackground() {
             x: c * spacing,
             y: Math.random() * H, // stagger start so they don't all move in sync
             speed: 0.2 + Math.random() * 0.4,
-            opacity: 0.08 + Math.random() * 0.18,
+            opacity: 0.15 + Math.random() * 0.35,
           })
         }
       }
@@ -79,10 +79,14 @@ function DotBackground() {
       ref={canvasRef}
       style={{
         position: 'absolute',
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
+        display: 'block',
       }}
     />
   )
