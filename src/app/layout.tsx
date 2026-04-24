@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { DM_Sans, IBM_Plex_Mono } from 'next/font/google'
+import GoogleProvider from '@/components/GoogleProvider'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -24,7 +25,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${dmSans.variable} ${ibmPlexMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <GoogleProvider>{children}</GoogleProvider>
+      </body>
     </html>
   )
 }
